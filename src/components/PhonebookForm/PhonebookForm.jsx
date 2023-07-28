@@ -1,94 +1,95 @@
-import React, { useState } from 'react';
+import React from 'react';
 import css from './PhonebookForm.module.css';
 
 import { Formik, Form, Field } from 'formik';
+import * as yup from 'yup';
 
 import PropTypes from 'prop-types';
+// import { toast } from 'react-toastify';
+// import { toastConfig } from 'components/App';
+import { FormError } from 'components/FormError/FormError';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { nanoid } from 'nanoid';
+import { toastConfig } from 'components/App';
+import { addContact } from 'redux/contactsReducer';
 
-const initialValues = {
-  name: '',
-  number: '',
-};
+const schema = yup.object().shape({
+  name: yup.string('no valid name').required('Required'),
+  number: yup.number('no valid name').required('Required').positive().integer(),
+});
 
-export const PhonebookForm = ({ title, onAddContact }) => {
-  const [name, setName] = useState(initialValues.name);
-  const [number, setNumber] = useState(initialValues.number);
-  // const initialValues = {
-  //   name: name,
-  //   number: number,
-  // };
+export const PhonebookForm = ({ title }) => {
+  const contacts = useSelector(state => state.contacts.contacts);
 
-  const handleInputChange = event => {
-    const { name, value } = event.currentTarget;
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-      case 'number':
-        setNumber(value);
-        break;
-      default:
-        break;
+  const dispatch = useDispatch();
+
+  const onAddContact = values => {
+    const isInContacts = contacts.some(
+      ({ name }) => name.toLowerCase() === values.name.toLowerCase()
+    );
+
+    if (isInContacts) {
+      toast.error(`${values.name} is already in contacts`, toastConfig);
+      return;
     }
+
+    const finalContact = {
+      id: nanoid(5),
+      ...values,
+    };
+
+    dispatch(addContact([...contacts, finalContact]));
   };
 
-  const handleSubmit = (values, {resetForm}) => {
-    // event.preventDefault();
-    
-    const contactData = {
-      name,
-      number,
-    };
-    console.log('contactData: ', contactData);
-    
-    console.log('values: ', values);
+  const handleSubmit = (values, { resetForm }) => {
+    resetForm();
 
-    onAddContact(contactData);
-
-    // setName('');
-    // setNumber('');
+    onAddContact(values);
   };
 
   return (
     <>
       <h2 className={css.title}>{title}</h2>
       <Formik
-        initialValues={initialValues}
+        initialValues={{
+          name: '',
+          number: '',
+        }}
         onSubmit={handleSubmit}
-        onChange={handleInputChange}
+        validationSchema={schema}
       >
-        <Form className={css.formStyle}>
-          <label className={css.label}>
-            <span className={css.span}>Name</span>
-            <Field
-              className={css.input}
-              onChange={handleInputChange}
-              type="text"
-              name="name"
-              // pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-              // title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-              value={name}
-              autoComplete="true"
-              required
-            />
-          </label>
-          <label className={css.label}>
-            <span className={css.span}>Number</span>
-            <Field
-              className={css.input}
-              onChange={handleInputChange}
-              value={number}
-              type="tel"
-              name="number"
-              // pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-              // title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-              required
-            />
-          </label>
-          <button type="submit" className={css.button}>
-            Add contact
-          </button>
-        </Form>
+        {({ errors, touched }) => (
+          <Form className={css.formStyle}>
+            <label className={css.label}>
+              <span className={css.span}>Name</span>
+              <Field
+                className={css.input}
+                type="text"
+                name="name"
+                autoComplete="true"
+              />
+              <FormError name="name" />
+            </label>
+            {/* {errors.name && touched.name
+              ? toast.error(`${errors.name}`, toastConfig)
+              : null} */}
+            <label className={css.label}>
+              <span className={css.span}>Number</span>
+              <Field
+                className={css.input}
+                type="tel"
+                name="number"
+                autoComplete="true"
+              />
+              <FormError name="number" />
+            </label>
+
+            <button type="submit" className={css.button}>
+              Add contact
+            </button>
+          </Form>
+        )}
       </Formik>
     </>
   );
@@ -96,5 +97,4 @@ export const PhonebookForm = ({ title, onAddContact }) => {
 
 PhonebookForm.propTypes = {
   title: PropTypes.string.isRequired,
-  onAddContact: PropTypes.func.isRequired,
 };

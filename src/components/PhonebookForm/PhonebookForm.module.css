@@ -27,7 +27,7 @@
 .label {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   /* margin-bottom: 20px; */
 }
 
@@ -42,7 +42,7 @@
   width: 150px;
 }
 
-export const .button {
+.button {
   width: 120px;
   height: 24px;
   font-family: 'Roboto', sans-serif;
@@ -51,3 +51,5 @@ export const .button {
   font-weight: 700;
   cursor: pointer;
 }
+
+

@@ -1,43 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { PhonebookForm } from './PhonebookForm/PhonebookForm';
 import { ContactList } from './ContactList/ContactList';
-import { nanoid } from 'nanoid';
 import { TitleH2 } from './App.styled';
 import { Filter } from './Filter/Filter';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { setContacts } from 'redux/contactsReducer';
+
+export const toastConfig = {
+  position: 'top-center',
+  autoClose: 1500,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  theme: 'dark',
+  style: {
+    fontSize: '16px',
+  },
+};
+
 export const App = () => {
-  const [contacts, setContacts] = useState(addContactWithLocalStorage ?? []);
-  
-  function addContactWithLocalStorage() {
-    return JSON.parse(localStorage.getItem('contacts'));
-  }
+  const contacts = useSelector(state => state.contacts.contacts);
 
   const [filterContacts, setFilterContacs] = useState('');
-
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
-
-  const onRemoveContact = contactId => {
-    setContacts(contacts.filter(contact => contact.id !== contactId));
-  };
-
-  const onAddContact = contactData => {
-    const isInContacts = contacts.some(
-      ({ name }) => name.toLowerCase() === contactData.name.toLowerCase()
-    );
-
-    if (isInContacts) {
-      alert(`${contactData.name} is already in contacts`);
-      return;
-    }
-
-    const finalContact = {
-      id: nanoid(5),
-      ...contactData,
-    };
-
-    setContacts([...contacts, finalContact]);
-  };
 
   const onChangeFilter = event => {
     setFilterContacs(event.target.value);
@@ -46,8 +34,9 @@ export const App = () => {
   const onFilteredContacts = () => {
     const normalFilter = filterContacts.toLowerCase();
 
+    // console.log('contacts: ', contacts);
     return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(normalFilter)
+      contact.name?.toLowerCase().includes(normalFilter)
     );
   };
 
@@ -66,7 +55,7 @@ export const App = () => {
     >
       <PhonebookForm
         title="Phonebook"
-        onAddContact={onAddContact}
+        // onAddContact={onAddContact}
       ></PhonebookForm>
       <TitleH2>Contacts</TitleH2>
 
@@ -74,9 +63,10 @@ export const App = () => {
         <>
           <Filter value={filterContacts} onChangeFilter={onChangeFilter} />
           <ContactList
-            onRemoveContact={onRemoveContact}
+            // onRemoveContact={onRemoveContact}
             filteredContacts={filteredContacts}
           />
+          <ToastContainer />
         </>
       )}
     </div>

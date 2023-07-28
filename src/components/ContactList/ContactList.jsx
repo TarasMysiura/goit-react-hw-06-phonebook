@@ -3,11 +3,17 @@ import React from 'react';
 import { Ul } from './ContactList.styled';
 import PropTypes from 'prop-types';
 
-export const ContactList = ({ onRemoveContact, filteredContacts }) => {
+export const ContactList = ({ filteredContacts }) => {
+//  const contacts = useSelector(state => state.contacts.contacts);
+
+//  const dispatch = useDispatch();
+
+
+
   return (
     <Ul>
       <Contact
-        onRemoveContact={onRemoveContact}
+        // onRemoveContact={onRemoveContact}
         filteredContacts={filteredContacts}
       />
     </Ul>
@@ -22,5 +28,5 @@ ContactList.propTypes = {
       number: PropTypes.string.isRequired,
     })
   ),
-  onRemoveContact: PropTypes.func.isRequired,
+  // onRemoveContact: PropTypes.func.isRequired,
 };
