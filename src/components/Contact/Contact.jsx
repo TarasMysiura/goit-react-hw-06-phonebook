@@ -1,15 +1,11 @@
 import React from 'react';
 import { Button, Li, NumberSpan, Span } from './Contact.styled';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import { removeContact } from 'redux/contactsReducer';
+import { useDispatch } from 'react-redux';
+import { removeContact } from 'redux/contactsSlice';
 
 export const Contact = ({ filteredContacts }) => {
-  const contacts = useSelector(state => state.contacts.contacts);
-
   const dispatch = useDispatch();
-
-  // console.log('contacts: ', contacts);
 
   const onRemoveContact = contactId => {
     dispatch(removeContact(contactId));

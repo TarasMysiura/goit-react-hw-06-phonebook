@@ -5,14 +5,12 @@ import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup';
 
 import PropTypes from 'prop-types';
-// import { toast } from 'react-toastify';
-// import { toastConfig } from 'components/App';
 import { FormError } from 'components/FormError/FormError';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { nanoid } from 'nanoid';
-import { toastConfig } from 'components/App';
-import { addContact } from 'redux/contactsReducer';
+import { addContact } from 'redux/contactsSlice';
+import { toastConfig } from 'redux/data';
 
 const schema = yup.object().shape({
   name: yup.string('no valid name').required('Required'),
@@ -39,13 +37,12 @@ export const PhonebookForm = ({ title }) => {
       ...values,
     };
 
-    dispatch(addContact([...contacts, finalContact]));
+    dispatch(addContact(finalContact));
   };
 
   const handleSubmit = (values, { resetForm }) => {
-    resetForm();
-
     onAddContact(values);
+    resetForm();
   };
 
   return (
@@ -59,37 +56,32 @@ export const PhonebookForm = ({ title }) => {
         onSubmit={handleSubmit}
         validationSchema={schema}
       >
-        {({ errors, touched }) => (
-          <Form className={css.formStyle}>
-            <label className={css.label}>
-              <span className={css.span}>Name</span>
-              <Field
-                className={css.input}
-                type="text"
-                name="name"
-                autoComplete="true"
-              />
-              <FormError name="name" />
-            </label>
-            {/* {errors.name && touched.name
-              ? toast.error(`${errors.name}`, toastConfig)
-              : null} */}
-            <label className={css.label}>
-              <span className={css.span}>Number</span>
-              <Field
-                className={css.input}
-                type="tel"
-                name="number"
-                autoComplete="true"
-              />
-              <FormError name="number" />
-            </label>
+        <Form className={css.formStyle}>
+          <label className={css.label}>
+            <span className={css.span}>Name</span>
+            <Field
+              className={css.input}
+              type="text"
+              name="name"
+              autoComplete="true"
+            />
+            <FormError name="name" />
+          </label>
+          <label className={css.label}>
+            <span className={css.span}>Number</span>
+            <Field
+              className={css.input}
+              type="tel"
+              name="number"
+              autoComplete="true"
+            />
+            <FormError name="number" />
+          </label>
 
-            <button type="submit" className={css.button}>
-              Add contact
-            </button>
-          </Form>
-        )}
+          <button type="submit" className={css.button}>
+            Add contact
+          </button>
+        </Form>
       </Formik>
     </>
   );

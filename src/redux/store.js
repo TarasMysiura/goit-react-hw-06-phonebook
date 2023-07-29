@@ -10,17 +10,20 @@ import {
   REGISTER,
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import { contactsReducer } from './contactsReducer';
+import { contactsReducer } from './contactsSlice';
+import { filterSliceReducer } from './filterSlice';
 
 const contactsPersistConfig = {
   key: 'contacts',
   storage,
   whitelist: ['contacts'],
+  blacklist: ['filter'],
 };
 
 export const store = configureStore({
   reducer: {
     contacts: persistReducer(contactsPersistConfig, contactsReducer),
+    filterContacts: filterSliceReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
